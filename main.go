@@ -1,7 +1,20 @@
-package goalgetbetteratgo
+package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 func main() {
-	fmt.Println("I want to get better at go")
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", handleRoot)
+
+	fmt.Println("Now listening on port 4321.")
+	http.ListenAndServe(":4321", mux)
+}
+
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello")
+
 }
