@@ -2,19 +2,30 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+
+	"github.com/dugalcedo/goal-get-better-at-go/env"
+	"github.com/dugalcedo/goal-get-better-at-go/rout"
 )
 
+// ===== MAIN =====
 func main() {
-	mux := http.NewServeMux()
+	vars := env.Vars()
 
-	mux.HandleFunc("/", handleRoot)
+	router := rout.NewRouter()
 
-	fmt.Println("Now listening on port 4321.")
-	http.ListenAndServe(":4321", mux)
-}
+	router.Handle("/", func(ctx rout.Context) {
+		if ctx.R.Method == "GET" && ctx.R.URL.String() == "/" {
+			ctx.Data = map[string]any{
+				"message": "Hello",
+			}
+			ctx.Respond(200)
+			return
+		}
 
-func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello")
+		// not found
+		ctx.Reject(404, "Not found")
+	})
 
+	fmt.Printf("Now listening on port %s\n", vars.PORT)
+	router.Listen(vars.PORT)
 }
